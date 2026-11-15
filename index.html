@@ -1,1 +1,39 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edto Online</title>
+    <style>
+        body { background:#0b1021; color:#fff; font-family:sans-serif; height:100vh; display:flex; align-items:center; justify-content:center; margin:0; }
+        #login-screen { text-align:center; background:#12182b; padding:40px; border-radius:16px; }
+        .role-btn { padding:12px 24px; margin:10px; font-size:16px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; color:#fff; }
+        .btn-p1 { background:#00d2ff; }
+        .btn-p2 { background:#ff5e95; }
+        #gameCanvas { border:2px solid #1f293d; border-radius:8px; background:#111827; display:none; }
+    </style>
+</head>
+<body>
+    <div id="login-screen">
+        <h1>🌙 Edto Online</h1>
+        <p>Hangi karakterle bağlanıyorsun?</p>
+        <button class="role-btn btn-p1" id="b1">Haru (Ben)</button>
+        <button class="role-btn btn-p2" id="b2">❤️ Sevgilin</button>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
 
+    <script>
+        function selectRole(role) {
+            document.getElementById('login-screen').style.display = 'none';
+            var c = document.getElementById('gameCanvas');
+            c.style.display = 'block';
+            var ctx = c.getContext('2d');
+            ctx.fillStyle = '#00d2ff';
+            ctx.font = '24px Arial';
+            ctx.fillText('Oyun basladi! Karakter: ' + role + ' (v-test)', 50, 100);
+        }
+        document.getElementById('b1').addEventListener('click', function(){ selectRole('p1'); });
+        document.getElementById('b2').addEventListener('click', function(){ selectRole('p2'); });
+    </script>
+</body>
+</html>
