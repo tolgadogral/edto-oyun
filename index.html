@@ -3,223 +3,394 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tolga & Eda Online</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Edto Online V3</title>
 <style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    background: #0b1021;
-    color: white;
-    font-family: Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-}
-
-#login-screen {
-    text-align: center;
-    background: #12182b;
-    padding: 40px;
-    border-radius: 16px;
-}
-
-.role-btn {
-    padding: 14px 24px;
-    margin: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    color: white;
-}
-
-.btn-p1 {
-    background: #00aacc;
-}
-
-.btn-p2 {
-    background: #e8437d;
-}
-
-#gameCanvas {
-    border: 2px solid #1f293d;
-    border-radius: 8px;
-    background: #111827;
-    display: none;
-    max-width: 95vw;
-    max-height: 75vh;
-}
-
-#status {
-    font-size: 13px;
-    color: #94a3b8;
-    margin-top: 12px;
-}
+*{box-sizing:border-box}
+body{margin:0;background:#10121b;color:#eee;font-family:Arial;overflow:hidden}
+button,select{background:#303448;color:white;border:1px solid #555;padding:10px;border-radius:8px;cursor:pointer}
+button:hover{background:#555b76}
+#editor{position:absolute;inset:0;background:#10121b;display:flex;align-items:center;justify-content:center;z-index:5}
+.panel{background:#202438;padding:25px;border-radius:16px;width:min(440px,94vw);max-height:95vh;overflow:auto}
+.panel h1{color:#e8b8c5}
+.field{margin:12px 0}
+.field label{display:block;font-size:13px;color:#c5c5d0;margin-bottom:5px}
+.field select{width:100%}
+#game{display:none}
+canvas{display:block;width:100vw;height:100vh;touch-action:none}
+#hud{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.hudbox{background:#151a2be8;padding:12px;border:1px solid #41465c;border-radius:12px;font-size:12px;pointer-events:auto}
+#hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:#171b2beF;padding:12px 20px;border-radius:12px;text-align:center;min-width:220px}
+#message{position:absolute;top:90px;left:50%;transform:translateX(-50%);background:#292e43;padding:14px 20px;border-radius:12px;display:none;z-index:4}
+#mobile{position:absolute;bottom:75px;left:15px;display:grid;grid-template-columns:repeat(3,48px);gap:4px}
+#mobile button{height:44px;background:#272d42c9}
+#actions{position:absolute;bottom:75px;right:15px;display:flex;flex-direction:column;gap:6px}
+#actions button{background:#343b55}
+#shop{position:absolute;inset:0;background:#080b12dd;display:none;align-items:center;justify-content:center;z-index:8}
 </style>
 </head>
-
 <body>
 
-<div id="login-screen">
-    <h1>🌙 Tolga & Eda</h1>
-    <p>Hangi karakterle bağlanıyorsun?</p>
+<div id="editor">
+<div class="panel">
+<h1>🌙 EDTO ONLINE</h1>
+<p>Kendi karakterini oluştur</p>
 
-    <button class="role-btn btn-p1" id="b1">
-        Tolga ❤️
-    </button>
-
-    <button class="role-btn btn-p2" id="b2">
-        Eda ❤️
-    </button>
+<div class="field">
+<label>Karakter</label>
+<select id="gender"><option value="Erkek">Erkek</option><option value="Kadın">Kadın</option></select>
+</div>
+<div class="field">
+<label>İsim</label>
+<select id="name"><option>Tolga</option><option>Eda</option></select>
+</div>
+<div class="field">
+<label>Ten rengi</label>
+<select id="skin">
+<option value="#f0c5a3">Açık</option>
+<option value="#d49a75">Buğday</option>
+<option value="#996448">Esmer</option>
+<option value="#70432f">Koyu</option>
+</select>
+</div>
+<div class="field">
+<label>Saç rengi</label>
+<select id="hair">
+<option value="#211a20">Siyah</option>
+<option value="#79513a">Kahverengi</option>
+<option value="#d6ad69">Sarı</option>
+<option value="#9a536b">Bordo</option>
+<option value="#ded9d2">Gri</option>
+</select>
+</div>
+<div class="field">
+<label>Saç modeli</label>
+<select id="hairStyle"><option>Kısa</option><option>Uzun</option><option>Dağınık</option><option>Topuz</option></select>
+</div>
+<div class="field">
+<label>Göz rengi</label>
+<select id="eyes"><option value="#493329">Kahverengi</option><option value="#4385a4">Mavi</option><option value="#56845b">Yeşil</option><option value="#777777">Gri</option></select>
+</div>
+<div class="field">
+<label>Kıyafet</label>
+<select id="clothes">
+<option value="#25283b">Siyah streetwear</option>
+<option value="#a34e69">Bordo kazak</option>
+<option value="#647b86">Gri ceket</option>
+<option value="#e0d6c8">Krem kombin</option>
+<option value="#415c48">Yeşil kombin</option>
+</select>
+</div>
+<button onclick="startGame()" style="width:100%;margin-top:15px">DÜNYAYA KATIL ❤️</button>
+</div>
 </div>
 
-<canvas id="gameCanvas" width="800" height="600"></canvas>
+<div id="game">
+<canvas id="c"></canvas>
+<div id="hud">
+<div class="hudbox">
+🌙 <b id="playerName">Tolga</b><br>
+💰 <span id="money">500</span> coin<br>
+📍 <span id="location">Mahalle</span>
+</div>
+<div class="hudbox">
+❤️ Mutluluk: <span id="happy">80</span><br>
+🍜 Açlık: <span id="hunger">80</span><br>
+⚡ Enerji: <span id="energy">80</span>
+</div>
+</div>
+<div id="message"></div>
+<div id="hint">WASD: Hareket · E: Etkileşim</div>
+<div id="mobile">
+<button onclick="move(0,-1)">▲</button><button onclick="move(0,-1)">↑</button><button onclick="move(0,-1)">▲</button>
+<button onclick="move(-1,0)">◀</button><button onclick="move(0,1)">▼</button><button onclick="move(1,0)">▶</button>
+</div>
+<div id="actions">
+<button onclick="interact()">E · ETKİLEŞ</button>
+<button onclick="openShop('Kıyafet mağazası')">🛍️ Alışveriş</button>
+<button onclick="toggleCar()">🚗 Araba</button>
+<button onclick="showQuests()">📋 Görevler</button>
+</div>
+</div>
 
-<div id="status"></div>
+<div id="shop">
+<div class="panel">
+<h2 id="shopTitle">Alışveriş</h2>
+<div id="shopItems"></div>
+<button onclick="closeShop()" style="width:100%;margin-top:15px">Kapat</button>
+</div>
+</div>
 
 <script>
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+let W=0,H=0;
+function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight}
+addEventListener('resize',resize);resize();
 
-const colors = {
-    p1: '#00d2ff',
-    p2: '#ff5e95'
-};
+let player={x:400,y:350,speed:3.2};
+let stats={money:500,happy:80,hunger:80,energy:80};
+let character={name:'Tolga',skin:'#f0c5a3',hair:'#211a20',eyes:'#493329',clothes:'#25283b',gender:'Erkek',hairStyle:'Kısa'};
+let keys={},scene='town',car=false,carSpeed=0,carAngle=0;
+let time=0;
+let tasks=[
+{name:'Evde kahvaltı yap',done:false,reward:80},
+{name:'Bir mağazayı ziyaret et',done:false,reward:100},
+{name:'Biraz dinlen',done:false,reward:60},
+{name:'Kafeye git',done:false,reward:120}
+];
+let items=[];
 
-const players = {
-    p1: { x: 200, y: 300 },
-    p2: { x: 600, y: 300 }
-};
-
-let myRole = null;
-let keys = {};
-let animationStarted = false;
-
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
-function setStatus(message) {
-    document.getElementById('status').textContent = message;
+function startGame(){
+character.name=document.getElementById('name').value;
+character.gender=document.getElementById('gender').value;
+character.skin=document.getElementById('skin').value;
+character.hair=document.getElementById('hair').value;
+character.eyes=document.getElementById('eyes').value;
+character.clothes=document.getElementById('clothes').value;
+character.hairStyle=document.getElementById('hairStyle').value;
+document.getElementById('playerName').textContent=character.name;
+document.getElementById('editor').style.display='none';
+document.getElementById('game').style.display='block';
+player.x=W/2;player.y=H/2;
+loop();
 }
 
-// KARAKTER SEÇİMİ
-
-document.getElementById('b1').addEventListener('click', () => {
-    selectRole('p1');
-});
-
-document.getElementById('b2').addEventListener('click', () => {
-    selectRole('p2');
-});
-
-function selectRole(role) {
-
-    myRole = role;
-
-    document.getElementById('login-screen').style.display = 'none';
-    canvas.style.display = 'block';
-
-    setStatus(
-        role === 'p1'
-        ? 'Tolga olarak oynuyorsun! ❤️'
-        : 'Eda olarak oynuyorsun! ❤️'
-    );
-
-    if (!animationStarted) {
-        animationStarted = true;
-        requestAnimationFrame(loop);
-    }
+function msg(t){
+let el=document.getElementById('message');
+el.textContent=t;el.style.display='block';
+clearTimeout(msg.timer);
+msg.timer=setTimeout(()=>el.style.display='none',2400);
+}
+function move(x,y){
+if(scene==='town'){
+player.x+=x*25;player.y+=y*25;
+}else{
+player.x+=x*25;player.y+=y*25;
+}
 }
 
-// KLAVYE KONTROLLERİ
-
-window.addEventListener('keydown', (e) => {
-
-    keys[e.key.toLowerCase()] = true;
-
-    if (
-        ['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' ']
-        .includes(e.key.toLowerCase())
-    ) {
-        e.preventDefault();
-    }
-
+addEventListener('keydown',e=>{
+keys[e.key.toLowerCase()]=true;
+if(e.key.toLowerCase()==='e')interact();
+if(e.key.toLowerCase()==='escape')closeShop();
+if(e.key.toLowerCase()===' ')toggleCar();
 });
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 
-window.addEventListener('keyup', (e) => {
-    keys[e.key.toLowerCase()] = false;
-});
-
-// OYUN DÖNGÜSÜ
-
-function loop() {
-
-    if (myRole) {
-
-        const me = players[myRole];
-        const speed = 4;
-
-        if (keys['w'] || keys['arrowup']) me.y -= speed;
-        if (keys['s'] || keys['arrowdown']) me.y += speed;
-        if (keys['a'] || keys['arrowleft']) me.x -= speed;
-        if (keys['d'] || keys['arrowright']) me.x += speed;
-
-        me.x = Math.max(20, Math.min(780, me.x));
-        me.y = Math.max(20, Math.min(580, me.y));
-
-    }
-
-    // ARKA PLAN
-
-    ctx.clearRect(0, 0, 800, 600);
-
-    // ZEMİN DESENİ
-
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 1;
-
-    for (let x = 0; x < 800; x += 50) {
-        for (let y = 0; y < 600; y += 50) {
-            ctx.strokeRect(x, y, 50, 50);
-        }
-    }
-
-    // KARAKTERLER
-
-    ['p1', 'p2'].forEach((role) => {
-
-        const player = players[role];
-
-        ctx.fillStyle = colors[role];
-
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, 18, 0, Math.PI * 2);
-        ctx.fill();
-
-        // İSİMLER
-
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 14px Arial';
-        ctx.textAlign = 'center';
-
-        ctx.fillText(
-            role === 'p1' ? 'Tolga ❤️' : 'Eda ❤️',
-            player.x,
-            player.y - 28
-        );
-
-    });
-
-    requestAnimationFrame(loop);
+function enterRoom(room){
+scene=room;car=false;
+player.x=100;player.y=H-100;
+msg(room==='home'?'Evimize hoş geldin ❤️':room==='bedroom'?'Yatak odası':'Mekâna girdin');
+document.getElementById('location').textContent=room==='home'?'Evimiz':room;
+}
+function leaveRoom(){
+scene='town';player.x=W/2;player.y=H-120;
+document.getElementById('location').textContent='Mahalle';
+msg('Dışarı çıktın');
 }
 
+function rect(x,y,w,h,color){
+ctx.fillStyle=color;ctx.fillRect(x,y,w,h);
+ctx.strokeStyle='#080b12';ctx.strokeRect(x,y,w,h);
+}
+function drawCharacter(x,y){
+ctx.save();ctx.translate(x,y);
+ctx.fillStyle=character.clothes;
+ctx.fillRect(-13,-5,26,30);
+ctx.fillStyle=character.skin;
+ctx.beginPath();ctx.arc(0,-16,11,0,Math.PI*2);ctx.fill();
+ctx.fillStyle=character.hair;
+ctx.beginPath();ctx.arc(0,-22,12,Math.PI,Math.PI*2);ctx.fill();
+if(character.hairStyle==='Uzun')rect(-12,-22,5,23,character.hair);
+if(character.hairStyle==='Topuz')ctx.arc(0,-31,6,0,Math.PI*2);
+ctx.fillStyle=character.eyes;
+ctx.fillRect(-5,-17,3,2);ctx.fillRect(3,-17,3,2);
+rect(-11,24,8,13,'#252333');rect(3,24,8,13,'#252333');
+ctx.restore();
+}
+
+function drawTown(){
+ctx.fillStyle='#18202a';ctx.fillRect(0,0,W,H);
+ctx.fillStyle='#252a35';
+ctx.fillRect(0,H*.42,W,H*.24);
+ctx.fillRect(W*.40,0,W*.18,H);
+for(let i=0;i<18;i++){
+let x=(i%6)*W/6+10,y=Math.floor(i/6)*H/3+20;
+rect(x,y,W/8,H/5,['#393044','#38404b','#3a3438'][i%3]);
+ctx.fillStyle='#d6a16e';
+ctx.fillRect(x+15,y+20,15,20);
+ctx.fillRect(x+45,y+20,15,20);
+ctx.fillStyle='#e3c4a0';ctx.font='bold 13px Arial';
+ctx.fillText(['EV','RAMEN','MARKET','CAFE','AVM','KARAOKE'][i%6],x+8,y+H/5-10);
+}
+for(let i=0;i<8;i++){
+let x=80+i*130,y=H*.5;
+ctx.fillStyle='#e7b57b';ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();
+}
+ctx.fillStyle='#9f6a80';ctx.font='18px Arial';
+ctx.fillText('🌸 YORU DISTRICT',W/2-80,40);
+drawCar();
+}
+
+function drawRoom(){
+ctx.fillStyle='#3b3440';ctx.fillRect(0,0,W,H);
+ctx.fillStyle='#252a35';
+ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W/2,H*.2);ctx.lineTo(W,H*.0);ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.fill();
+ctx.fillStyle='#65566a';ctx.fillRect(25,90,W-50,H-120);
+ctx.fillStyle='#211e2b';ctx.fillRect(35,100,W-70,H-140);
+ctx.fillStyle='#bd977e';ctx.font='bold 20px Arial';
+ctx.fillText('EDTO HOME',50,65);
+if(scene==='home'||scene==='bedroom'){
+rect(90,150,180,95,'#786174');ctx.fillStyle='white';ctx.fillText('YATAK',135,205);
+rect(W-250,140,150,100,'#8c5f45');ctx.fillText('DOLAP',W-220,195);
+rect(100,H-180,180,65,'#5b596b');ctx.fillText('KOLTUK',145,H-140);
+rect(W-260,H-190,150,75,'#6c5344');ctx.fillText('MUTFAK',W-230,H-145);
+rect(W/2-50,110,100,50,'#2c4651');ctx.fillText('TV',W/2-15,140);
+}
+if(scene==='bathroom'){
+rect(100,160,130,110,'#6e9ca2');ctx.fillText('DUŞ',140,220);
+rect(W-240,160,120,110,'#e1e0dc');ctx.fillStyle='#333';ctx.fillText('WC',W-200,220);
+rect(W/2-70,H/2,140,60,'#79989b');ctx.fillText('LAVABO',W/2-40,H/2+35);
+}
+if(scene==='kitchen'){
+rect(100,140,220,90,'#87694e');ctx.fillText('TEZGAH',150,195);
+rect(W-270,140,150,100,'#a16a42');ctx.fillText('BUZDOLABI',W-250,195);
+rect(W/2-70,H/2,140,90,'#684f42');ctx.fillText('YEMEK MASASI',W/2-55,H/2+50);
+}
+rect(W/2-35,H-65,70,35,'#b38d72');ctx.fillStyle='white';ctx.fillText('ÇIKIŞ',W/2-25,H-42);
+}
+
+function drawCar(){
+if(!car)return;
+ctx.save();ctx.translate(player.x,player.y);ctx.rotate(carAngle);
+rect(-24,-13,48,26,'#b75a70');
+rect(-12,-10,24,20,'#91a9b4');
+ctx.restore();
+}
+
+function draw(){
+if(scene==='town')drawTown();else drawRoom();
+drawCharacter(player.x,player.y);
+if(scene!=='town'){
+ctx.fillStyle='white';ctx.font='14px Arial';
+ctx.fillText('Kapı / Çıkış',W/2-35,H-25);
+}
+}
+
+function near(x,y,d=65){return Math.hypot(player.x-x,player.y-y)<d}
+
+function interact(){
+if(scene==='town'){
+let places=[
+{x:W*.12,y:H*.2,name:'Ev',action:()=>enterRoom('home')},
+{x:W*.29,y:H*.2,name:'Ramen',action:()=>openShop('Ramen restoranı')},
+{x:W*.46,y:H*.2,name:'Market',action:()=>openShop('Market')},
+{x:W*.62,y:H*.2,name:'Kafe',action:()=>openShop('Kafe')},
+{x:W*.79,y:H*.2,name:'AVM',action:()=>openShop('Alışveriş merkezi')},
+{x:W*.91,y:H*.2,name:'Karaoke',action:()=>openShop('Karaoke')}
+];
+let p=places.find(p=>near(p.x,p.y,100));
+if(p){p.action();if(p.name==='Ev')tasks[2].done=true;return}
+if(near(W/2,H*.54,90)){toggleCar();return}
+msg('Yaklaşmak istediğin mekânın önüne git. E tuşuna bas.');
+}else{
+if(near(W/2,H-45,100)){leaveRoom();return}
+if(scene==='home'){
+if(near(180,200,110)){stats.energy=Math.min(100,stats.energy+30);msg('Güzel bir uyku çektin! ⚡');tasks[2].done=true}
+else if(near(W-170,H-150,100)){stats.hunger=Math.min(100,stats.hunger+30);msg('Yemek hazırladın! 🍜');tasks[0].done=true}
+else if(near(W/2,135,90)){stats.happy=Math.min(100,stats.happy+15);msg('Birlikte film izledin! ❤️'}
+else if(near(180,H-150,100)){stats.happy+=5;msg('Koltuğa oturdun.')}
+else msg('Bir eşyaya yaklaşmalısın.');
+}
+if(scene==='bathroom'){
+if(near(160,200,100)){stats.happy+=10;msg('Duş aldın. Temizlendin!')}
+else if(near(W-180,200,100)){msg('Tuvalet ihtiyacını giderdin.')}
+else msg('Banyoda bir eşya seç.');
+}
+if(scene==='kitchen'){
+if(near(200,180,120)){stats.hunger=Math.min(100,stats.hunger+40);msg('Lezzetli bir yemek hazırladın!')}
+else msg('Mutfakta yemek hazırlayabilirsin.');
+}
+}
+updateHud();
+}
+
+function toggleCar(){
+if(scene!=='town'){msg('Arabaya dışarıda binebilirsin.');return}
+car=!car;carSpeed=0;
+msg(car?'Arabaya bindin. WASD ile sür!':'Arabadan indin.');
+}
+
+function openShop(title){
+document.getElementById('shop').style.display='flex';
+document.getElementById('shopTitle').textContent=title;
+let products=title==='Kıyafet mağazası'||title==='Alışveriş merkezi'?
+[['Siyah ceket',150],['Bordo kazak',120],['Krem kombin',180],['Aksesuar',80]]:
+title==='Market'?[['Ramen',35],['Onigiri',25],['Kahve',30],['Tatlı',40]]:
+title==='Ramen restoranı'?[['Ramen menüsü',65],['Gyoza',45],['İçecek',25]]:
+[['Latte',45],['Cheesecake',55],['Soğuk kahve',40]];
+let html='';
+products.forEach((p,i)=>html+=`<p>${p[0]} — ${p[1]} coin <button onclick="buy(${p[1]},'${p[0]}')">Satın al</button></p>`);
+document.getElementById('shopItems').innerHTML=html;
+}
+function buy(price,name){
+if(stats.money<price){msg('Yeterli paran yok!');return}
+stats.money-=price;
+if(name.includes('Ramen')||name.includes('Onigiri')||name.includes('menüsü'))stats.hunger=Math.min(100,stats.hunger+25);
+if(name.includes('ceket')||name.includes('kazak')||name.includes('kombin'))msg(name+' satın alındı!');
+else msg(name+' satın alındı!');
+updateHud();
+}
+function closeShop(){document.getElementById('shop').style.display='none'}
+
+function showQuests(){
+let html='<h3>📋 Günlük Görevler</h3>';
+tasks.forEach((t,i)=>html+=`<p>${t.done?'✅':'⬜'} ${t.name} — ${t.reward} coin</p>`);
+html+='<button onclick="closeShop()">Kapat</button>';
+document.getElementById('shopTitle').textContent='Günlük görevler';
+document.getElementById('shopItems').innerHTML=html;
+document.getElementById('shop').style.display='flex';
+}
+
+function updateHud(){
+document.getElementById('money').textContent=stats.money;
+document.getElementById('happy').textContent=Math.round(stats.happy);
+document.getElementById('hunger').textContent=Math.round(stats.hunger);
+document.getElementById('energy').textContent=Math.round(stats.energy);
+}
+
+function update(){
+let dx=0,dy=0;
+if(keys.w||keys.arrowup)dy--;
+if(keys.s||keys.arrowdown)dy++;
+if(keys.a||keys.arrowleft)dx--;
+if(keys.d||keys.arrowright)dx++;
+if(car){
+if(keys.w||keys.arrowup)carSpeed=Math.min(8,carSpeed+.12);
+else carSpeed*=.97;
+if(keys.s||keys.arrowdown)carSpeed=Math.max(-3,carSpeed-.16);
+if(keys.a||keys.arrowleft)carAngle-=.035;
+if(keys.d||keys.arrowright)carAngle+=.035;
+player.x+=Math.cos(carAngle)*carSpeed;
+player.y+=Math.sin(carAngle)*carSpeed;
+}else{
+let length=Math.hypot(dx,dy)||1;
+let speed=player.speed;
+player.x+=dx/length*speed;
+player.y+=dy/length*speed;
+}
+player.x=Math.max(25,Math.min(W-25,player.x));
+player.y=Math.max(55,Math.min(H-35,player.y));
+}
+
+let last=0;
+function loop(t=0){
+let dt=Math.min((t-last)/16.67,2);last=t;
+update();
+draw();
+requestAnimationFrame(loop);
+}
 </script>
-
 </body>
 </html>
