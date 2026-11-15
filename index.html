@@ -5,109 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edto Online</title>
     <style>
-        body { background:#0b1021; color:#fff; font-family:'Segoe UI',Tahoma,sans-serif; overflow:hidden; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0; }
-        #login-screen { text-align:center; background:rgba(18,24,43,0.9); padding:40px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
+        body { background:#0b1021; color:#fff; font-family:sans-serif; height:100vh; display:flex; align-items:center; justify-content:center; margin:0; }
+        #login-screen { text-align:center; background:#12182b; padding:40px; border-radius:16px; }
         .role-btn { padding:12px 24px; margin:10px; font-size:16px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; color:#fff; }
         .btn-p1 { background:#00d2ff; }
         .btn-p2 { background:#ff5e95; }
-        #gameCanvas { border:2px solid #1f293d; border-radius:8px; background:#111827; max-width:100%; }
-        #status { font-size:12px; color:#94a3b8; margin-top:8px; text-align:center; }
+        #gameCanvas { border:2px solid #1f293d; border-radius:8px; background:#111827; display:none; }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="login-screen">
-            <h1>🌙 Edto Online</h1>
-            <p style="color:#94a3b8; font-size:14px;">Hangi karakterle bağlanıyorsun?</p>
-            <div>
-                <button class="role-btn btn-p1" onclick="selectRole('p1')">Haru (Ben)</button>
-                <button class="role-btn btn-p2" onclick="selectRole('p2')">❤️ Sevgilin</button>
-            </div>
-        </div>
-        <canvas id="gameCanvas" width="800" height="600" style="display:none;"></canvas>
-        <div id="status"></div>
+    <div id="login-screen">
+        <h1>🌙 Edto Online</h1>
+        <p>Hangi karakterle bağlanıyorsun?</p>
+        <button class="role-btn btn-p1" id="b1">Haru (Ben)</button>
+        <button class="role-btn btn-p2" id="b2">❤️ Sevgilin</button>
     </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-    <!-- NORMAL script: Firebase çökse bile buton çalışır -->
     <script>
-        const colors = { p1: '#00d2ff', p2: '#ff5e95' };
-        const players = {
-            p1: { x: 200, y: 300 },
-            p2: { x: 600, y: 300 }
-        };
-        let myRole = null;
-        let saveToDb = null;   // Firebase hazır olunca dolacak
-        const keys = {};
-
-        window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-
-        function setStatus(t) { document.getElementById('status').textContent = t; }
-
         function selectRole(role) {
-            myRole = role;
             document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('gameCanvas').style.display = 'block';
-            setStatus('Bağlanılıyor...');
-            loop();
-            connectFirebase();
-        }
-
-        function loop() {
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            const me = players[myRole];
-            const speed = 4;
-            let moved = false;
-            if (keys['w'] || keys['arrowup'])    { me.y -= speed; moved = true; }
-            if (keys['s'] || keys['arrowdown'])  { me.y += speed; moved = true; }
-            if (keys['a'] || keys['arrowleft'])  { me.x -= speed; moved = true; }
-            if (keys['d'] || keys['arrowright']) { me.x += speed; moved = true; }
-            me.x = Math.max(20, Math.min(780, me.x));
-            me.y = Math.max(20, Math.min(580, me.y));
-            if (moved && saveToDb) saveToDb(me);
-
-            ctx.clearRect(0, 0, 800, 600);
-            for (const r of ['p1', 'p2']) {
-                ctx.fillStyle = colors[r];
-                ctx.beginPath();
-                ctx.arc(players[r].x, players[r].y, 18, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#fff';
-                ctx.font = '14px Arial';
-                ctx.fillText(r === myRole ? 'Ben' : 'O', players[r].x - 10, players[r].y - 26);
-            }
-            requestAnimationFrame(loop);
-        }
-
-        async function connectFirebase() {
-            try {
-                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-                const { getDatabase, ref, set, onValue } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js");
-
-                const app = initializeApp({
-                    apiKey: "AIzaSyAHPOFEyQyQ4Pv01qk41mevKBCrrl_oHg",
-                    authDomain: "edto-570e7.firebaseapp.com",
-                    databaseURL: "https://edto-570e7-default-rtdb.firebaseio.com",
-                    projectId: "edto-570e7",
-                    storageBucket: "edto-570e7.appspot.com",
-                    messagingSenderId: "335796327341",
-                    appId: "1:335796327341:web:837ce32ae93c2bf9f50724"
-                });
-                const db = getDatabase(app);
-                const other = myRole === 'p1' ? 'p2' : 'p1';
-
-                saveToDb = (pos) => set(ref(db, 'players/' + myRole), { x: pos.x, y: pos.y });
-                onValue(ref(db, 'players/' + other), snap => {
-                    const v = snap.val();
-                    if (v) { players[other].x = v.x; players[other].y = v.y; }
-                });
-                setStatus('Online ✅ (WASD / ok tuşları)');
-            } catch (err) {
-                console.error(err);
-                setStatus('Firebase bağlanamadı, tek kişilik modda. Hata: ' + err.message);
-            }
-        }
-    </script>
-</body>
-</html>
+            var c = document.getElementById('gameCanvas');
+            c.style.display = 'block';
+            var ctx = c.getContext('2d');
+            ctx.fillStyle = '#00d2ff';
+            ctx.font = '24px
