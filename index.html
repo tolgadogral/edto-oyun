@@ -2,132 +2,99 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- iOS ve Android Uygulama (Tam Ekran) Ayarları -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Edto">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0b1021">
-    
-    <title>Edto - Cozy Life Sim</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edto Online</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-touch-callout: none; }
-        body { background: #0b1021; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #game-container { position: relative; width: 100vw; height: 100vh; max-width: 800px; max-height: 600px; background: #121936; overflow: hidden; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 2px solid #2a3b6c; }
-        canvas { display: block; width: 100%; height: 100%; }
-        
-        /* Giriş / Karakter Seçim Ekranı */
-        #login-screen { position: absolute; inset: 0; background: rgba(11, 16, 33, 0.95); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 20px; text-align: center; }
-        #login-screen h1 { color: #60a5fa; font-size: 28px; }
-        .role-btns { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        .role-btn { padding: 15px 25px; border-radius: 14px; border: none; font-size: 16px; font-weight: bold; color: white; cursor: pointer; transition: transform 0.1s; }
-        .role-btn:active { transform: scale(0.95); }
-        .btn-p1 { background: #2563eb; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
-        .btn-p2 { background: #db2777; box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4); }
-
-        .ui-overlay { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; pointer-events: none; z-index: 10; }
-        .badge { background: rgba(15, 23, 42, 0.85); padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); font-size: 13px; display: flex; align-items: center; gap: 8px; pointer-events: auto; backdrop-filter: blur(5px); }
-        
-        /* Tekli Mobil Joystick */
-        .controls { position: absolute; bottom: 25px; left: 25px; pointer-events: none; z-index: 10; }
-        .joystick-group { background: rgba(15, 23, 42, 0.75); padding: 12px; border-radius: 18px; display: grid; grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(2, 52px); gap: 6px; pointer-events: auto; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.15); }
-        .btn-ctl { background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .btn-ctl:active { opacity: 0.8; transform: scale(0.93); }
-        
-        .action-menu { position: absolute; bottom: 45px; right: 25px; z-index: 20; pointer-events: auto; }
-        .action-btn { background: #f59e0b; color: #111; border: none; padding: 14px 22px; border-radius: 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); font-size: 15px; }
-        
-        #modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; padding: 25px; border-radius: 16px; border: 2px solid #3b82f6; width: 85%; max-width: 400px; display: none; z-index: 100; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.9); }
-        #modal h2 { margin-bottom: 15px; color: #60a5fa; }
-        #modal p { margin-bottom: 20px; font-size: 14px; color: #cbd5e1; }
-        .modal-btns { display: flex; gap: 10px; justify-content: center; }
-        .modal-btns button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-primary { background: #3b82f6; color: white; }
+        body {
+            background: #0b1021;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        #game-container {
+            position: relative;
+        }
+        #login-screen {
+            text-align: center;
+            background: rgba(18, 24, 43, 0.9);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .role-btn {
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .btn-p1 { background: #00d2ff; }
+        .btn-p2 { background: #ff5e95; }
+        #gameCanvas {
+            border: 2px solid #1f293d;
+            border-radius: 8px;
+            background: #111827;
+        }
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    <!-- Karakter Seçim Ekranı -->
-    <div id="login-screen">
-        <h1>🌙 Edto Online</h1>
-        <p style="color:#94a3b8; font-size:14px;">Hangi karakterle bağlanıyorsun?</p>
-        <div class="role-btns">
-            <button class="role-btn btn-p1" onclick="selectRole('p1')">🔵 Haru (Sen)</button>
-            <button class="role-btn btn-p2" onclick="selectRole('p2')">🩷 Sevgilin</button>
+    <div id="game-container">
+        <!-- Karakter Seçim Ekranı -->
+        <div id="login-screen">
+            <h1>🌙 Edto Online</h1>
+            <p style="color:#94a3b8; font-size:14px;">Hangi karakterle bağlanıyorsun?</p>
+            <div class="role-btn">
+                <button class="role-btn btn-p1" onclick="selectRole('p1')">Haru (Ben)</button>
+                <button class="role-btn btn-p2" onclick="selectRole('p2')">❤️ Sevgilin</button>
+            </div>
         </div>
+
+        <canvas id="gameCanvas" width="800" height="600" style="display:none;"></canvas>
     </div>
 
-    <div class="ui-overlay">
-        <div class="badge">🌙 <b>Edto</b> | <span id="sceneName">Gece Sokağı</span></div>
-        <div class="badge">💵 <span id="money">500</span> &nbsp;|&nbsp; ❤️ <span id="love">80</span>%</div>
-    </div>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    <canvas id="gameCanvas"></canvas>
+        // Global fonksiyon (Butonun çalışması için şart)
+        window.selectRole = function(role) {
+            console.log("Rol seçildi:", role);
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('gameCanvas').style.display = 'block';
+            
+            // Oyun motoru başlatma kodları buraya gelebilir
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#00d2ff';
+            ctx.font = '24px Arial';
+            ctx.fillText("Oyun Başladı! Karakter: " + role, 50, 100);
+        };
 
-    <div class="action-menu" id="actionMenu" style="display:none;">
-        <button class="action-btn" id="actionBtn" onclick="triggerAction()">İçeri Gir</button>
-    </div>
+        // Firebase Ayarları
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHPOFEyQyQ4Pv01qk41mevKBCrrl_oHg",
+            authDomain: "edto-570e7.firebaseapp.com",
+            databaseURL: "https://edto-570e7-default-rtdb.firebaseio.com",
+            projectId: "edto-570e7",
+            storageBucket: "edto-570e7.appspot.com",
+            messagingSenderId: "335796327341",
+            appId: "1:335796327341:web:837ce32ae93c2bf9f50724"
+        };
 
-    <!-- Kişiye Özel Tek Joystick -->
-    <div class="controls">
-        <div class="joystick-group">
-            <div></div>
-            <button class="btn-ctl" id="btnUp" ontouchstart="startMove('up')" ontouchend="stopMove()" onmousedown="startMove('up')" onmouseup="stopMove()">⬆️</button>
-            <div></div>
-            <button class="btn-ctl" id="btnLeft" ontouchstart="startMove('left')" ontouchend="stopMove()" onmousedown="startMove('left')" onmouseup="stopMove()">⬅️</button>
-            <button class="btn-ctl" id="btnDown" ontouchstart="startMove('down')" ontouchend="stopMove()" onmousedown="startMove('down')" onmouseup="stopMove()">⬇️</button>
-            <button class="btn-ctl" id="btnRight" ontouchstart="startMove('right')" ontouchend="stopMove()" onmousedown="startMove('right')" onmouseup="stopMove()">➡️</button>
-        </div>
-    </div>
-
-    <div id="modal">
-        <h2 id="modalTitle">Mekan</h2>
-        <p id="modalDesc">İçerik yükleniyor...</p>
-        <div class="modal-btns" id="modalButtons">
-            <button class="btn-primary" onclick="closeModal()">Kapat</button>
-        </div>
-    </div>
-</div>
-
-<!-- Firebase SDK -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    // Firebase Bilgilerin (Güncellendi)
-    const firebaseConfig = {
-        apiKey: "AIzaSyAHPOfEeYqyQ4Pv01qk41wevKBCrrL_oHg",
-        authDomain: "edto-570e7.firebaseapp.com",
-        databaseURL: "https://edto-570e7-default-rtdb.firebaseio.com",
-        projectId: "edto-570e7",
-        storageBucket: "edto-570e7.firebasestorage.app",
-        messagingSenderId: "335796327341",
-        appId: "1:335796327341:web:837ce32ae93c2bf9f50724"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const roomRef = ref(db, 'edto_room_1');
-
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 800;
-    canvas.height = 600;
-
-    let myRole = null; 
-    let moveInterval = null;
-
-    let gameState = {
-        money: 500,
-        love: 80,
-        scene: 'street',
-        p1: { x: 250, y: 350, color: '#3b82f6', name: 'Haru' },
-        p2: { x: 300, y: 350, color: '#db2777', name: 'Sevgilin' }
-    };
-
-    const buildings = [
-        { name: 'Evimiz', x: 100, y: 150, w: 120, h: 100, color: '#9a3412', scene: 'house' },
-        { name: 'AVM', x: 350, y: 120, w: 160, h: 120, color: '#1e3a8a', scene: 'mall' },
-        { name: 'Kafe', x: 600, y: 150, w: 110, h: 100, color: '#065f4
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+    </script>
+</body>
+</html>
