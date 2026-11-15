@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edto Online</title>
     <style>
-        body { background:#0b1021; color:#fff; font-family:sans-serif; height:100vh; display:flex; align-items:center; justify-content:center; margin:0; }
+        body { background:#0b1021; color:#fff; font-family:sans-serif; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0; overflow:hidden; }
         #login-screen { text-align:center; background:#12182b; padding:40px; border-radius:16px; }
         .role-btn { padding:12px 24px; margin:10px; font-size:16px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; color:#fff; }
         .btn-p1 { background:#00d2ff; }
         .btn-p2 { background:#ff5e95; }
-        #gameCanvas { border:2px solid #1f293d; border-radius:8px; background:#111827; display:none; }
+        #gameCanvas { border:2px solid #1f293d; border-radius:8px; background:#111827; display:none; max-width:100%; }
+        #status { font-size:12px; color:#94a3b8; margin-top:8px; }
     </style>
 </head>
 <body>
@@ -21,19 +22,44 @@
         <button class="role-btn btn-p2" id="b2">❤️ Sevgilin</button>
     </div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="status"></div>
 
     <script>
+        var colors = { p1: '#00d2ff', p2: '#ff5e95' };
+        var players = { p1: { x: 200, y: 300 }, p2: { x: 600, y: 300 } };
+        var myRole = null;
+        var saveToDb = null;
+        var keys = {};
+
+        window.addEventListener('keydown', function(e){ keys[e.key.toLowerCase()] = true; });
+        window.addEventListener('keyup', function(e){ keys[e.key.toLowerCase()] = false; });
+
+        function setStatus(t) { document.getElementById('status').textContent = t; }
+
         function selectRole(role) {
+            myRole = role;
             document.getElementById('login-screen').style.display = 'none';
-            var c = document.getElementById('gameCanvas');
-            c.style.display = 'block';
-            var ctx = c.getContext('2d');
-            ctx.fillStyle = '#00d2ff';
-            ctx.font = '24px Arial';
-            ctx.fillText('Oyun basladi! Karakter: ' + role + ' (v-test)', 50, 100);
+            document.getElementById('gameCanvas').style.display = 'block';
+            setStatus('Bağlanılıyor...');
+            loop();
+            connectFirebase();
         }
-        document.getElementById('b1').addEventListener('click', function(){ selectRole('p1'); });
-        document.getElementById('b2').addEventListener('click', function(){ selectRole('p2'); });
-    </script>
-</body>
-</html>
+
+        function loop() {
+            var canvas = document.getElementById('gameCanvas');
+            var ctx = canvas.getContext('2d');
+            var me = players[myRole];
+            var speed = 4, moved = false;
+            if (keys['w'] || keys['arrowup'])    { me.y -= speed; moved = true; }
+            if (keys['s'] || keys['arrowdown'])  { me.y += speed; moved = true; }
+            if (keys['a'] || keys['arrowleft'])  { me.x -= speed; moved = true; }
+            if (keys['d'] || keys['arrowright']) { me.x += speed; moved = true; }
+            me.x = Math.max(20, Math.min(780, me.x));
+            me.y = Math.max(20, Math.min(580, me.y));
+            if (moved && saveToDb) saveToDb(me);
+
+            ctx.clearRect(0, 0, 800, 600);
+            ['p1', 'p2'].forEach(function(r) {
+                ctx.fillStyle = colors[r];
+                ctx.beginPath();
+                ctx.arc(players[r].x, players[r].y, 18, 0,
